@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 pre-commit = "*"
+docopt = "*"
 
 [dev-packages]
 
