@@ -9,6 +9,7 @@ Usage:
     dipthid <path>
 """
 
+import mimetypes
 from pathlib import Path
 
 from docopt import docopt
@@ -47,8 +48,13 @@ def convert_file(filepath):
     print(filepath)
 
     if get_conv_codecs(vid) == ("copy", "copy"):
-        print("Don't need to convert")
-        return
+        # [TODO]: Although codecs may be web friendly,
+        #          The container may not. E.g. Matroska
+        mime_type, _ = mimetypes.guess_type(filepath)
+
+        if mime_type != "video/x-matroska":
+            print("Don't need to convert")
+            return
 
     vid.convert(*get_conv_codecs(vid))
 

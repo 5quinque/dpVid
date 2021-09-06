@@ -59,9 +59,54 @@ class Video:
 
     def output_path(self, video_codec):
         exts = {
-            "copy": Path(self.file_path).suffix,
+            "copy": self.get_ext(Path(self.file_path).suffix),
             "libx264": ".mp4",
             "vp8": ".webm",
             "vp9": ".webm",
         }
         return f"output/{Path(self.file_path).stem}{exts[video_codec]}"
+
+    def get_ext(self, ext):
+        codec_exts = {"h264": ".mp4", "h265": ".mp4", "vp8": ".webm", "vp9": ".webm"}
+        valid_ext = [".webm", ".mp4"]
+
+        if ext in valid_ext:
+            return ext
+
+        return codec_exts[self.video_codec]
+
+    def create_thumbnail(self, thumbnail_type="scaled"):
+        thumbnails = {
+            "scaled": [
+                "ffmpeg",
+                "-ss",
+                "00:00:01.00",
+                "-i",
+                self.file_path,
+                "-vf",
+                "'scale=640:640:force_original_aspect_ratio=decrease'",
+                "-vframes",
+                "1",
+                "output.png",
+            ],
+            "full": [
+                "ffmpeg",
+                "-ss",
+                "00:00:01.00",
+                "-i",
+                self.file_path,
+                "-vframes",
+                "1",
+                "output.png",
+            ],
+            "range": [
+                "ffmpeg",
+                "-i",
+                self.file_path,
+                "-vf",
+                "'scale=640:640:force_original_aspect_ratio=decrease,fps=1/5'",
+                "img%03d.png",
+            ],
+        }
+
+        subprocess.run(thumbnails[thumbnail_type], capture_output=True)
