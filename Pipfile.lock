@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b50e9736e9b2eeac78cde22b02d28884b9328627e4ad89453d598a3944196a37"
+            "sha256": "7351233b609e8f3c68b4539ef3a442935e4a4ce3a96be987c7ee61efbe2a402f"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,6 +16,14 @@
         ]
     },
     "default": {
+        "asyncinotify": {
+            "hashes": [
+                "sha256:26fa85d282df0066ab423cd96754d7ea07e6013d8a69a51e573303dbd0d2dff6",
+                "sha256:867cc056d88fc07aa8b3d1dc5b9c3c911cdd6130a4df5f67beb1fdecfd37b164"
+            ],
+            "index": "pypi",
+            "version": "==2.0.2"
+        },
         "backports.entry-points-selectable": {
             "hashes": [
                 "sha256:988468260ec1c196dab6ae1149260e2f5472c9110334e5d51adcb77867361f6a",

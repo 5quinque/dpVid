@@ -22,13 +22,14 @@ class Video:
         ]
 
         completed_process = subprocess.run(codec_command, capture_output=True)
+        if completed_process.stdout.decode("utf-8") == "":
+            return False
         codecs = completed_process.stdout.decode("utf-8").splitlines()
-
         self.video_codec = codecs[0]
         if len(codecs) > 1:
             self.audio_codec = codecs[1]
 
-    def convert(self, video_codec="libx264", audio_codec="aac"):
+    async def convert(self, video_codec="libx264", audio_codec="aac"):
         convert_command = [
             "ffmpeg",
             "-i",
