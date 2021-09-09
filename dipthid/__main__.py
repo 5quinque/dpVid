@@ -56,6 +56,7 @@ async def convert_file(filepath):
         #          The container may not. E.g. Matroska
         mime_type, _ = mimetypes.guess_type(filepath)
 
+        # or just have a list of allowed mime types.. video/mp4, video/webm
         if mime_type != "video/x-matroska":
             print("Don't need to convert")
             return

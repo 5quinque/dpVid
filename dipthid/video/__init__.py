@@ -1,3 +1,4 @@
+import asyncio
 import subprocess
 from pathlib import Path
 
@@ -53,12 +54,15 @@ class Video:
             self.output_path(video_codec),
         ]
 
-        # print(convert_command)
-        print(" ".join(convert_command))
+        print(f"Converting - {self.file_path}")
 
-        convert_command = ["sleep", "4"]
-
-        completed_process = subprocess.run(convert_command)  # , capture_output=True)
+        proc = await asyncio.create_subprocess_exec(
+            *convert_command,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        # stdout, stderr = await proc.communicate()
+        print(f"[Convert for {self.file_path} exited with {proc.returncode}]")
 
     def output_path(self, video_codec):
         exts = {
