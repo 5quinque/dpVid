@@ -5,14 +5,16 @@
 dpVid / dipthid
 
 Usage:
-    dipthid watch <dir> [--consumers=CONSUMERS]
-    dipthid <path>
+    dipthid watch <dir> [--consumers=CONSUMERS] [options]
+    dipthid <path> [options]
 
 Options:
     --consumers=CONSUMERS           Number of consumers that will convert videos asynchronously [default: 2]
+    --log-level=LEVEL                       Set logger level, one of DEBUG, INFO, WARNING, ERROR, CRITICAL [default: INFO]
 """
 
 import asyncio
+import logging
 import mimetypes
 import time
 from pathlib import Path
@@ -21,6 +23,8 @@ from docopt import docopt
 
 from .asyncinotifyrecurse import InotifyRecurse, Mask
 from .video import Video
+
+logger = logging.getLogger(__name__)
 
 
 def get_conv_codecs(video):
@@ -58,7 +62,7 @@ async def convert_file(filepath):
 
         # or just have a list of allowed mime types.. video/mp4, video/webm
         if mime_type != "video/x-matroska":
-            print("Don't need to convert")
+            logger.info(f"<{filepath}> Doesn't need to convert")
             return
 
     await vid.convert(*get_conv_codecs(vid))
@@ -72,15 +76,15 @@ async def convert(path):
     elif p.is_file():
         await convert_file(path)
     else:
-        print("Not found")
+        logger.info(f"<{path}> Not found")
 
 
 async def consume(name: int, q: asyncio.Queue) -> None:
-    print(f"Warming up consumer <{name}>")
+    logger.debug(f"Warming up consumer <{name}>")
     while True:
         i, t = await q.get()
         now = time.perf_counter()
-        print(f"Consumer {name} got element <{i}>" f" in {now-t:0.5f} seconds.")
+        logger.debug(f"Consumer {name} got element <{i}>" f" in {now-t:0.5f} seconds.")
         await convert(i)
         q.task_done()
 
@@ -122,8 +126,18 @@ async def watch(opts):
         c.cancel()
 
 
+def setup_logging(opts):
+    logging.basicConfig(
+        level=opts["--log-level"],
+        format="[%(asctime)s] <%(levelname)s> [%(name)s] [%(pathname)s:%(lineno)d %(funcName)s] %(message)s",
+        force=True,
+    )
+
+
 def main():
     opts = docopt(__doc__)
+
+    setup_logging(opts)
 
     if opts["watch"]:
         asyncio.run(watch(opts))

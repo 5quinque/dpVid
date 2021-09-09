@@ -1,6 +1,9 @@
 import asyncio
+import logging
 import subprocess
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 
 class Video:
@@ -54,7 +57,7 @@ class Video:
             self.output_path(video_codec),
         ]
 
-        print(f"Converting - {self.file_path}")
+        logger.info(f"Converting - {self.file_path}")
 
         proc = await asyncio.create_subprocess_exec(
             *convert_command,
@@ -62,7 +65,7 @@ class Video:
             stderr=asyncio.subprocess.PIPE,
         )
         # stdout, stderr = await proc.communicate()
-        print(f"[Convert for {self.file_path} exited with {proc.returncode}]")
+        logger.info(f"[Convert for {self.file_path} exited with {proc.returncode}]")
 
     def output_path(self, video_codec):
         exts = {
