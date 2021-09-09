@@ -2,12 +2,24 @@ import os
 
 from asyncinotify import InitFlags, Inotify, Mask
 
+_MASK_ALL = (
+    Mask.ACCESS
+    | Mask.MODIFY
+    | Mask.OPEN
+    | Mask.CREATE
+    | Mask.DELETE
+    | Mask.ATTRIB
+    | Mask.CLOSE
+    | Mask.MOVE
+    | Mask.ONLYDIR
+)
+
 
 class InotifyRecurse(Inotify):
     def __init__(
         self,
         path,
-        mask,
+        mask: Mask = _MASK_ALL,
         flags: InitFlags = InitFlags.CLOEXEC | InitFlags.NONBLOCK,
         cache_size: int = 10,
     ) -> None:
@@ -15,9 +27,9 @@ class InotifyRecurse(Inotify):
 
         self._mask = mask
 
-        self.__load_tree(path)
+        self.load_tree(path)
 
-    def __load_tree(self, path):
+    def load_tree(self, path):
         paths = []
 
         q = [path]

@@ -5,8 +5,11 @@
 dpVid / dipthid
 
 Usage:
-    dipthid watch <dir> [--interval=SECONDS]
+    dipthid watch <dir> [--consumers=CONSUMERS]
     dipthid <path>
+
+Options:
+    --consumers=CONSUMERS           Number of consumers that will convert videos asynchronously [default: 2]
 """
 
 import asyncio
@@ -72,6 +75,7 @@ async def convert(path):
 
 
 async def consume(name: int, q: asyncio.Queue) -> None:
+    print(f"Warming up consumer <{name}>")
     while True:
         i, t = await q.get()
         now = time.perf_counter()
@@ -81,22 +85,36 @@ async def consume(name: int, q: asyncio.Queue) -> None:
 
 
 async def inotify_producer(q: asyncio.Queue, path: str) -> None:
-    with InotifyRecurse(path, Mask.CLOSE_WRITE) as inotify:
+    with InotifyRecurse(
+        path, mask=Mask.MOVED_TO | Mask.CLOSE_WRITE | Mask.CREATE
+    ) as inotify:
         async for event in inotify:
             i = str(event.path)
             t = time.perf_counter()
 
-            await q.put((i, t))
+            # Watch newly created dirs
+            if (
+                Mask.CREATE in event.mask
+                and event.path is not None
+                and event.path.is_dir()
+            ):
+                inotify.load_tree(event.path)
+
+            if (
+                (Mask.MOVED_TO | Mask.CLOSE_WRITE) & event.mask
+                and event.path is not None
+                and event.path.is_file()
+            ):
+                await q.put((i, t))
 
 
 async def watch(opts):
     path = opts["<dir>"]
     q = asyncio.Queue()
-
     producer = asyncio.create_task(inotify_producer(q, path))
-
-    consumers = [asyncio.create_task(consume(n, q)) for n in range(2)]
-
+    consumers = [
+        asyncio.create_task(consume(n, q)) for n in range(int(opts["--consumers"]))
+    ]
     await asyncio.gather(producer)
     await q.join()  # Implicitly awaits consumers, too
     for c in consumers:
@@ -109,7 +127,8 @@ def main():
     if opts["watch"]:
         asyncio.run(watch(opts))
     else:
-        convert(opts["<path>"])
+        # Will only run convert_file synchronously
+        asyncio.run(convert(opts["<path>"]))
 
 
 if __name__ == "__main__":

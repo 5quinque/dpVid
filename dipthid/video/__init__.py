@@ -56,25 +56,33 @@ class Video:
         # print(convert_command)
         print(" ".join(convert_command))
 
-        # completed_process = subprocess.run(convert_command)  # , capture_output=True)
+        convert_command = ["sleep", "4"]
+
+        completed_process = subprocess.run(convert_command)  # , capture_output=True)
 
     def output_path(self, video_codec):
         exts = {
-            "copy": self.get_ext(Path(self.file_path).suffix),
+            "copy": self.get_ext(Path(self.file_path).suffix, video_codec),
             "libx264": ".mp4",
             "vp8": ".webm",
             "vp9": ".webm",
         }
         return f"output/{Path(self.file_path).stem}{exts[video_codec]}"
 
-    def get_ext(self, ext):
-        codec_exts = {"h264": ".mp4", "h265": ".mp4", "vp8": ".webm", "vp9": ".webm"}
+    def get_ext(self, ext, video_codec):
+        codec_exts = {
+            "libx264": ".mp4",
+            "libx265": ".mp4",
+            "vp8": ".webm",
+            "vp9": ".webm",
+            "av1": ".mp4",
+        }
         valid_ext = [".webm", ".mp4"]
 
         if ext in valid_ext:
             return ext
 
-        return codec_exts[self.video_codec]
+        return codec_exts[video_codec]
 
     def create_thumbnail(self, thumbnail_type="scaled"):
         thumbnails = {
