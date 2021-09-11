@@ -54,6 +54,7 @@ class Video:
             "22",  # 23 is the default, and 51 is worst quality possible.
             "-movflags",  # Moves some data to the beginning of the file
             "+faststart",  # allowing the video to be played before it is completely downloaded.
+            "-y",  # Automatically overwrite file if already exists
             self.output_path(video_codec),
         ]
 

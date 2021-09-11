@@ -22,6 +22,7 @@ from pathlib import Path
 from docopt import docopt
 
 from .asyncinotifyrecurse import InotifyRecurse, Mask
+from .postprocessing import PostProcess
 from .video import Video
 
 logger = logging.getLogger(__name__)
@@ -31,7 +32,7 @@ def get_conv_codecs(video):
     valid_video_codecs = {
         "av1": "av1",
         "h264": "libx264",
-        "h265": "h265",
+        "h265": "libx265",
         "vp8": "vp8",
         "vp9": "vp8",
     }
@@ -75,6 +76,9 @@ async def convert(path):
             await convert(str(x))
     elif p.is_file():
         await convert_file(path)
+
+        pp = PostProcess(path.name)
+        pp.processed()
     else:
         logger.info(f"<{path}> Not found")
 

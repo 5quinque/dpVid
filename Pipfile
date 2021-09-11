@@ -7,6 +7,9 @@ name = "pypi"
 pre-commit = "*"
 docopt = "*"
 asyncinotify = "*"
+sqlalchemy = "*"
+mysql-connector-python = "*"
+mysqlclient = "*"
 
 [dev-packages]
 
