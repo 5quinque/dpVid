@@ -1,5 +1,7 @@
 import asyncio
 import logging
+import mimetypes
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -33,7 +35,8 @@ class Video:
         if len(codecs) > 1:
             self.audio_codec = codecs[1]
 
-    async def convert(self, video_codec="libx264", audio_codec="aac"):
+    async def convert(self, audio_codec="aac", video_codec="libx264"):
+        output_file_path = self.output_path(video_codec)
         convert_command = [
             "ffmpeg",
             "-i",
@@ -55,7 +58,7 @@ class Video:
             "-movflags",  # Moves some data to the beginning of the file
             "+faststart",  # allowing the video to be played before it is completely downloaded.
             "-y",  # Automatically overwrite file if already exists
-            self.output_path(video_codec),
+            output_file_path,
         ]
 
         logger.info(f"Converting - {self.file_path}")
@@ -65,22 +68,38 @@ class Video:
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
-        # stdout, stderr = await proc.communicate()
-        logger.info(f"[Convert for {self.file_path} exited with {proc.returncode}]")
+        stdout, stderr = await proc.communicate()
+
+        # print(stdout)
+        # print(stderr)
+
+        logger.info(f"Convert for {self.file_path} exited with {proc.returncode}")
+
+        new_file_path = f"{Path(self.file_path).parent}/{Path(output_file_path).name}"
+
+        logger.info(f"Moving {output_file_path} to {new_file_path}")
+        shutil.move(output_file_path, new_file_path)
+
+        mime_type, _ = mimetypes.guess_type(output_file_path)
+
+        return (Path(output_file_path).name, mime_type)
 
     def output_path(self, video_codec):
         exts = {
-            "copy": self.get_ext(Path(self.file_path).suffix, video_codec),
-            "libx264": ".mp4",
+            "copy": self.get_ext(Path(self.file_path).suffix, self.video_codec),
+            "h264": ".mp4",
             "vp8": ".webm",
             "vp9": ".webm",
         }
+
         return f"output/{Path(self.file_path).stem}{exts[video_codec]}"
 
-    def get_ext(self, ext, video_codec):
+    def get_ext(self, ext: str, video_codec: str):
         codec_exts = {
             "libx264": ".mp4",
             "libx265": ".mp4",
+            "h264": ".mp4",
+            "h265": ".mp4",
             "vp8": ".webm",
             "vp9": ".webm",
             "av1": ".mp4",
@@ -89,8 +108,10 @@ class Video:
 
         if ext in valid_ext:
             return ext
+        if video_codec in codec_exts:
+            return codec_exts[video_codec]
 
-        return codec_exts[video_codec]
+        return None
 
     def create_thumbnail(self, thumbnail_type="scaled"):
         thumbnails = {

@@ -23,7 +23,7 @@ class InotifyRecurse(Inotify):
         flags: InitFlags = InitFlags.CLOEXEC | InitFlags.NONBLOCK,
         cache_size: int = 10,
     ) -> None:
-        super(InotifyRecurse, self).__init__(flags=flags, cache_size=cache_size)
+        super().__init__(flags=flags, cache_size=cache_size)
 
         self._mask = mask
 
