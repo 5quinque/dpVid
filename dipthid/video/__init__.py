@@ -75,10 +75,9 @@ class Video:
 
         logger.info(f"Convert for {self.file_path} exited with {proc.returncode}")
 
-        new_file_path = f"{Path(self.file_path).parent}/{Path(output_file_path).name}"
-
-        logger.info(f"Moving {output_file_path} to {new_file_path}")
-        shutil.move(output_file_path, new_file_path)
+        # new_file_path = f"{Path(self.file_path).parent}/{Path(output_file_path).name}"
+        # logger.info(f"Moving {output_file_path} to {new_file_path}")
+        # shutil.move(output_file_path, new_file_path)
 
         mime_type, _ = mimetypes.guess_type(output_file_path)
 

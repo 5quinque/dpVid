@@ -22,27 +22,22 @@ class Dip:
             for x in p.iterdir():
                 await self.convert(str(x))
         elif p.is_file():
-            filename, mime_type = await self.convert_file(path)
-
-            pp = PostProcess(p.name, new_filename=filename, mime_type=mime_type)
+            if not self.valid_file(path):
+                logger.info(f"<{path}> needs converting")
+                pp = PostProcess(p.name, *await self.vid.convert(*self.conv_codec))
+            else:
+                logger.info(f"<{path}> doesn't needs converting")
+                pp = PostProcess(p.name)
             pp.processed()
         else:
             logger.info(f"<{path}> Not found")
 
-    async def convert_file(self, filepath):
-        vid = Video(filepath)
+    def valid_file(self, filepath):
+        self.vid = Video(filepath)
+        self.conv_codec = codecs(self.container, self.vid)
+        self.mime_type, _ = mimetypes.guess_type(filepath)
 
-        conv_codec = codecs(self.container, vid)
-
-        mime_type, _ = mimetypes.guess_type(filepath)
-
-        # print(mime_type, valid_container(mime_type), conv_codec)
-
-        if valid_container(mime_type) and conv_codec == ("copy", "copy"):
-            logger.info(f"<{filepath}> doesn't need converting")
-            return
-
-        return await vid.convert(*conv_codec)
+        return valid_container(self.mime_type) and self.conv_codec == ("copy", "copy")
 
     async def watch(self, opts):
         path = opts["<dir>"]
