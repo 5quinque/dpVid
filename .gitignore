@@ -2,3 +2,7 @@
 *.mp4
 *.webm
 /test_videos/
+
+*.egg-info/
+dist/
+

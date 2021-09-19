@@ -15,3 +15,24 @@ Usage:
 Options:
     --consumers=CONSUMERS           Number of consumers that will convert videos asynchronously [default: 2]
 ```
+
+## Installation
+
+### Create and activate virtual environment
+
+```bash
+python3.9 -m venv ~/.venv/dpVid
+source ~/.venv/dpVid/bin/activate
+```
+
+### Install as pip package
+
+```bash
+pip install -e .
+```
+
+### Install packages
+
+```bash
+pip install -r requirements.txt
+```
