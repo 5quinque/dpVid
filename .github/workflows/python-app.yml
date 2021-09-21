@@ -22,7 +22,7 @@ jobs:
         python-version: 3.9
     - name: Install ffmpeg
       run: |
-        sudo apt update && apt install ffmpeg
+        sudo apt update && sudo apt install ffmpeg
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
