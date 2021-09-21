@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import mimetypes
-import shutil
 import subprocess
 from pathlib import Path
 

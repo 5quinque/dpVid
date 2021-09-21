@@ -1,11 +1,11 @@
 import asyncio
+import importlib
 import logging
 import mimetypes
 import time
 from pathlib import Path
 
 from .asyncinotifyrecurse import InotifyRecurse, Mask
-from .postprocessing import PostProcess
 from .video import Video
 from .video.codechelper import codecs, valid_container
 
@@ -15,6 +15,14 @@ logger = logging.getLogger(__name__)
 class Dip:
     def __init__(self, opts):
         self.container = opts["--container"]
+        self.pp_class = opts["--post-processer"]
+
+    def postProcess(self, filename, new_filename=None, mime_type=None):
+        namespace, obj_name = self.pp_class.split(":")
+        p_mod = importlib.import_module(namespace, obj_name)
+        process_class = getattr(p_mod, obj_name)
+        process_obj = process_class(filename, new_filename, mime_type)
+        process_obj.processed()
 
     async def convert(self, path):
         p = Path(path)
@@ -24,11 +32,10 @@ class Dip:
         elif p.is_file():
             if not self.valid_file(path):
                 logger.info(f"<{path}> needs converting")
-                pp = PostProcess(p.name, *await self.vid.convert(*self.conv_codec))
+                self.postProcess(p.name, *await self.vid.convert(*self.conv_codec))
             else:
                 logger.info(f"<{path}> doesn't needs converting")
-                pp = PostProcess(p.name)
-            pp.processed()
+                self.postProcess(p.name)
         else:
             logger.info(f"<{path}> Not found")
 
@@ -36,7 +43,6 @@ class Dip:
         self.vid = Video(filepath)
         self.conv_codec = codecs(self.container, self.vid)
         self.mime_type, _ = mimetypes.guess_type(filepath)
-
         return valid_container(self.mime_type) and self.conv_codec == ("copy", "copy")
 
     async def watch(self, opts):

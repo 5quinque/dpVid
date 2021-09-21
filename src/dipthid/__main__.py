@@ -12,6 +12,7 @@ Options:
     --consumers=CONSUMERS           Number of consumers that will convert videos asynchronously [default: 2]
     --log-level=LEVEL               Set logger level, one of DEBUG, INFO, WARNING, ERROR, CRITICAL [default: INFO]
     --container=FORMAT              Output container format, either webm or mp4 [default: mp4]
+    --post-processer=CLASS          The python class that handles post processing [default: dipthid.postprocessing:PostProcess]
     --strict                        [TODO]
 """
 
@@ -28,7 +29,7 @@ logger = logging.getLogger(__name__)
 def setup_logging(opts):
     logging.basicConfig(
         level=opts["--log-level"],
-        format="[%(asctime)s] <%(levelname)s> [%(name)s] [%(pathname)s:%(lineno)d %(funcName)s] %(message)s",
+        format="[%(asctime)s] <%(levelname)s> [%(name)s] %(message)s",
         force=True,
     )
 

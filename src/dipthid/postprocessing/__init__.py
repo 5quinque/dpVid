@@ -1,6 +1,6 @@
-import os
+import logging
 
-import sqlalchemy as db
+logger = logging.getLogger(__name__)
 
 
 class PostProcess:
@@ -9,44 +9,7 @@ class PostProcess:
         self.new_filename = new_filename
         self.mime_type = mime_type
 
-        self.__connection = self._db_connect()
-
-    def _db_connect(self):
-        self.__engine = db.create_engine(os.environ.get("DATABASE_URL"))
-
-        connection = self.__engine.connect()
-        __metadata = db.MetaData()
-
-        self._media = db.Table(
-            "media", __metadata, autoload=True, autoload_with=self.__engine
-        )
-
-        return connection
-
-    def getFile(self):
-        query = db.select([self._media]).where(
-            self._media.columns.filename == self.filename
-        )
-
-        ResultProxy = self.__connection.execute(query)
-        ResultSet = ResultProxy.fetchall()
-
-        print(ResultSet)
-
     def processed(self):
-        if self.new_filename:
-            query = (
-                db.update(self._media)
-                .values(
-                    processed=True, filename=self.new_filename, mime_type=self.mime_type
-                )
-                .where(self._media.columns.filename == self.filename)
-            )
-        else:
-            query = (
-                db.update(self._media)
-                .values(processed=True)
-                .where(self._media.columns.filename == self.filename)
-            )
-
-        self.__connection.execute(query)
+        logger.info(
+            f"We have processed <{self.filename}> -> <{self.new_filename}> with the mime type <{self.mime_type}>"
+        )
