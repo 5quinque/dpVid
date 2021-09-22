@@ -9,11 +9,14 @@ Alternatively you can watch a directory and newly created files will be automati
 dpVid / dipthid
 
 Usage:
-    dipthid watch <dir> [--consumers=CONSUMERS]
-    dipthid <path>
+    dipthid watch <dir> [--consumers=CONSUMERS] [options]
+    dipthid <path> [options]
 
 Options:
     --consumers=CONSUMERS           Number of consumers that will convert videos asynchronously [default: 2]
+    --log-level=LEVEL               Set logger level, one of DEBUG, INFO, WARNING, ERROR, CRITICAL [default: INFO]
+    --container=FORMAT              Output container format, either webm or mp4 [default: mp4]
+    --post-processer=CLASS          The python class that handles post processing [default: dipthid.postprocessing:PostProcess]
 ```
 
 ## Installation
@@ -21,18 +24,12 @@ Options:
 ### Create and activate virtual environment
 
 ```bash
-python3.9 -m venv ~/.venv/dpVid
-source ~/.venv/dpVid/bin/activate
+python3.9 -m venv env
+source env/bin/activate
 ```
 
 ### Install as pip package
 
 ```bash
 pip install -e .
-```
-
-### Install packages
-
-```bash
-pip install -r requirements.txt
 ```
