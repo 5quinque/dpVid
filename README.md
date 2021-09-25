@@ -33,3 +33,14 @@ source env/bin/activate
 ```bash
 pip install -e .
 ```
+
+## Example usage
+
+Upload to Backblaze B2 bucket on completion
+
+```bash
+export B2_BUCKETNAME="REPLACEME"
+export B2_KEY="REPLACEME"
+export B2_SECRET="REPLACEME"
+dipthid ./test_videos/sample-avi-file.avi --post-processer=dipthid.postprocessing.b2_upload:B2Upload
+```

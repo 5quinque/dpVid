@@ -1,13 +1,17 @@
+import logging
 import os
+from pathlib import Path
 
 import sqlalchemy as db
 
 from . import PostProcess
 
+logger = logging.getLogger(__name__)
+
 
 class UpdateDB(PostProcess):
     def __init__(self, filename, new_filename=None, mime_type=None):
-        super().__init__(filename, new_filename, mime_type)
+        super().__init__(filename, Path(new_filename).name, mime_type)
 
         self.__connection = self._db_connect()
 
@@ -50,3 +54,4 @@ class UpdateDB(PostProcess):
             )
 
         self.__connection.execute(query)
+        logger.info("Update media table with new filename")

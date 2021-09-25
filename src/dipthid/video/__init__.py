@@ -80,7 +80,7 @@ class Video:
 
         mime_type, _ = mimetypes.guess_type(output_file_path)
 
-        return (Path(output_file_path).name, mime_type)
+        return (output_file_path, mime_type)
 
     def output_path(self, video_codec):
         exts = {
