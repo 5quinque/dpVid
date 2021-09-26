@@ -1,8 +1,9 @@
 import logging
 import os
+import time
 from pathlib import Path
 
-from b2sdk.v2 import B2Api, InMemoryAccountInfo
+from b2sdk.v2 import AbstractProgressListener, B2Api, InMemoryAccountInfo
 
 from . import PostProcess
 
@@ -22,11 +23,36 @@ class B2Bucket:
             local_file=local_file,
             file_name=b2_file_name,
             file_infos=file_info,
+            progress_listener=B2ProgressListener(),
         )
 
     def list_files(self):
         for file_version, folder_name in self.bucket.ls(latest_only=True):
             print(file_version.file_name, file_version.upload_timestamp, folder_name)
+
+
+class B2ProgressListener(AbstractProgressListener):
+    def __init__(self):
+        self.percentage = 0
+        self.tic = 0
+
+        super().__init__()
+
+    def set_total_bytes(self, total_byte_count):
+        self.total_byte_count = total_byte_count
+        logger.info(f"Total bytes: {self.total_byte_count}")
+
+    def bytes_completed(self, byte_count):
+        percentage = int(100 * float(byte_count) / float(self.total_byte_count))
+
+        if (
+            int(time.perf_counter()) - self.tic > 2
+            or byte_count == self.total_byte_count
+            and percentage != self.percentage
+        ):
+            logger.info(f"Upload progress: {percentage=}%")
+            self.percentage = percentage
+            self.tic = int(time.perf_counter())
 
 
 class B2Upload(PostProcess):

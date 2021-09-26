@@ -34,6 +34,14 @@ source env/bin/activate
 pip install -e .
 ```
 
+Any errors due to missing libraries can probably be fixed with:
+
+```bash
+sudo dnf install -y mariadb-devel python-devel
+```
+
+or the equivalent for your distro.
+
 ## Example usage
 
 Upload to Backblaze B2 bucket on completion
