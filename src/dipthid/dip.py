@@ -17,11 +17,11 @@ class Dip:
         self.container = opts["--container"]
         self.pp_class = opts["--post-processer"]
 
-    def postProcess(self, filename, new_filename=None, mime_type=None):
+    def postProcess(self, filename, mime_type=None, old_filename=None):
         namespace, obj_name = self.pp_class.split(":")
         p_mod = importlib.import_module(namespace, obj_name)
         process_class = getattr(p_mod, obj_name)
-        process_obj = process_class(filename, new_filename, mime_type)
+        process_obj = process_class(filename, mime_type, old_filename)
         process_obj.processed()
 
     async def convert(self, path):
@@ -32,10 +32,12 @@ class Dip:
         elif p.is_file():
             if not self.valid_file(path):
                 logger.info(f"<{path}> needs converting")
-                self.postProcess(p.name, *await self.vid.convert(*self.conv_codec))
+                self.postProcess(
+                    *await self.vid.convert(*self.conv_codec), old_filename=p
+                )
             else:
                 logger.info(f"<{path}> doesn't needs converting")
-                self.postProcess(p.name)
+                self.postProcess(p, old_filename=p.name)
         else:
             logger.info(f"<{path}> Not found")
 

@@ -56,17 +56,17 @@ class B2ProgressListener(AbstractProgressListener):
 
 
 class B2Upload(PostProcess):
-    def __init__(self, filename, new_filename=None, mime_type=None):
+    def __init__(self, filename, mime_type=None):
         self.bucket = B2Bucket(
             os.environ.get("B2_BUCKETNAME"),
             os.environ.get("B2_KEY"),
             os.environ.get("B2_SECRET"),
         )
 
-        super().__init__(filename, new_filename, mime_type)
+        super().__init__(filename, mime_type)
 
     def processed(self):
-        filename = Path(self.new_filename).name
+        filename = Path(self.filename).name
         logger.info(f"Uploading file <{filename}>")
-        self.bucket.upload_file(self.new_filename, Path(self.new_filename).name)
+        self.bucket.upload_file(self.filename, Path(self.filename).name)
         logger.info(f"Upload of <{filename}> complete")

@@ -6,7 +6,7 @@ from dipthid.dip import Dip
 def test_options():
     opts = {
         "--container": "mp4",
-        "--post-processer": "dipthid.postprocessing:PostProcess",
+        "--post-processer": "dipthid.postprocessing:PostProcessLog",
     }
     dip = Dip(opts)
 
@@ -18,7 +18,7 @@ async def test_mp4():
     opts = {
         "--container": "mp4",
         "<path>": "./test_videos/sample-mp4-file.mp4",
-        "--post-processer": "dipthid.postprocessing:PostProcess",
+        "--post-processer": "dipthid.postprocessing:PostProcessLog",
     }
 
     dip = Dip(opts)

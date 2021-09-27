@@ -10,8 +10,8 @@ logger = logging.getLogger(__name__)
 
 
 class UpdateDB(PostProcess):
-    def __init__(self, filename, new_filename=None, mime_type=None):
-        super().__init__(filename, Path(new_filename).name, mime_type)
+    def __init__(self, filename, mime_type=None, old_filename=None):
+        super().__init__(filename, mime_type, Path(old_filename).name)
 
         self.__connection = self._db_connect()
 
@@ -29,22 +29,19 @@ class UpdateDB(PostProcess):
 
     def getFile(self):
         query = db.select([self._media]).where(
-            self._media.columns.filename == self.filename
+            self._media.columns.filename == self.old_filename
         )
-
         ResultProxy = self.__connection.execute(query)
-        ResultSet = ResultProxy.fetchall()
-
-        print(ResultSet)
+        return ResultProxy.fetchall()
 
     def processed(self):
         if self.new_filename:
             query = (
                 db.update(self._media)
                 .values(
-                    processed=True, filename=self.new_filename, mime_type=self.mime_type
+                    processed=True, filename=self.filename, mime_type=self.mime_type
                 )
-                .where(self._media.columns.filename == self.filename)
+                .where(self._media.columns.filename == self.old_filename)
             )
         else:
             query = (
