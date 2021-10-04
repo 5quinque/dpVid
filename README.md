@@ -28,6 +28,18 @@ python3.9 -m venv env
 source env/bin/activate
 ```
 
+### Docker
+
+```bash
+docker build -t dipthid .
+docker run \
+    --name dipthid \
+    --detach \
+    -v test_videos:/usr/src/app/watch \
+    -v output:/usr/src/app/output \
+    --rm dipthid
+```
+
 ### Install as pip package
 
 ```bash
