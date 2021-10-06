@@ -30,14 +30,32 @@ source env/bin/activate
 
 ### Docker
 
+Build the image
 ```bash
 docker build -t dipthid .
+```
+
+Example
+```
 docker run \
     --name dipthid \
-    --detach \
-    -v test_videos:/usr/src/app/watch \
-    -v output:/usr/src/app/output \
-    --rm dipthid
+    -v test_videos:/app/watch \
+    -v output:/app/output \
+    --rm dipthid \
+    --post-processer=dipthid.postprocessing:PostProcessLog
+```
+
+B2 Post Processor
+```
+docker run \
+    --name dipthid \
+    -v test_videos:/app/watch \
+    -v output:/app/output \
+    --rm dipthid \
+    --env "B2_BUCKETNAME=REPLACEME" \
+    --env "B2_KEY=REPLACEME" \
+    --env "B2_SECRET=REPLACEME" \
+    --post-processer=dipthid.postprocessing.b2_upload:B2Upload
 ```
 
 ### Install as pip package
