@@ -1,20 +1,17 @@
 import asyncio
 import importlib
 import logging
-import mimetypes
 import time
 from pathlib import Path
 
 from .asyncinotifyrecurse import InotifyRecurse, Mask
 from .video import Video
-from .video.codechelper import codecs, valid_container
 
 logger = logging.getLogger(__name__)
 
 
 class Dip:
     def __init__(self, opts):
-        self.container = opts["--container"]
         self.pp_class = opts["--post-processer"]
 
     def postProcess(self, filename, mime_type=None, old_filename=None):
@@ -26,26 +23,17 @@ class Dip:
 
     async def convert(self, path):
         p = Path(path)
+
+        self.vid = Video(path)
+
         if p.is_dir():
             for x in p.iterdir():
                 await self.convert(str(x))
         elif p.is_file():
-            if not self.valid_file(path):
-                logger.info(f"<{path}> needs converting")
-                self.postProcess(
-                    *await self.vid.convert(*self.conv_codec), old_filename=p
-                )
-            else:
-                logger.info(f"<{path}> doesn't needs converting")
-                self.postProcess(p, old_filename=p.name)
+            logger.info(f"<{path}> needs converting")
+            self.postProcess(*await self.vid.convert(), old_filename=p)
         else:
             logger.info(f"<{path}> Not found")
-
-    def valid_file(self, filepath):
-        self.vid = Video(filepath)
-        self.conv_codec = codecs(self.container, self.vid)
-        self.mime_type, _ = mimetypes.guess_type(filepath)
-        return valid_container(self.mime_type) and self.conv_codec == ("copy", "copy")
 
     async def watch(self, opts):
         path = opts["<dir>"]
