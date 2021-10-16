@@ -11,7 +11,7 @@ Usage:
 Options:
     --consumers=CONSUMERS           Number of consumers that will convert videos asynchronously [default: 2]
     --log-level=LEVEL               Set logger level, one of DEBUG, INFO, WARNING, ERROR, CRITICAL [default: INFO]
-    --post-processer=CLASS          The python class that handles post processing [default: dipthid.postprocessing:PostProcessLog]
+    --post-processor=CLASS          The python class that handles post processing [default: dipthid.postprocessing:PostProcessLog]
     --strict                        [TODO]
 """
 

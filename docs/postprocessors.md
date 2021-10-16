@@ -2,7 +2,7 @@
 
 You can pass a post processing class as an argument for example:
 
-`dipthid ./test_videos/sample-mp4-file.mp4 --post-processer=dipthid.postprocessing:PostProcessLog`
+`dipthid ./test_videos/sample-mp4-file.mp4 --post-processor=dipthid.postprocessing:PostProcessLog`
 
 The class is a string containing the importable module and the name of the class inside that module, seperated by a colon.
 
@@ -29,3 +29,7 @@ class PostProcessLog(PostProcess):
             f"Processing complete, <{self.filename=}> with the <{self.mime_type=}>"
         )
 ```
+
+You can have multiple post processors seperated by commas. For example:
+
+`dipthid ./test_videos/sample-mp4-file.mp4 --post-processor=dipthid.postprocessing.b2_sync:B2Process,dipthid.postprocessing:PostProcessLog`

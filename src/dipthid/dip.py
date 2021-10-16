@@ -12,14 +12,15 @@ logger = logging.getLogger(__name__)
 
 class Dip:
     def __init__(self, opts):
-        self.pp_class = opts["--post-processer"]
+        self.pp_classes = opts["--post-processor"].rsplit(sep=",")
 
     def postProcess(self, filename, mime_type=None, old_filename=None):
-        namespace, obj_name = self.pp_class.split(":")
-        p_mod = importlib.import_module(namespace, obj_name)
-        process_class = getattr(p_mod, obj_name)
-        process_obj = process_class(filename, mime_type, old_filename)
-        process_obj.processed()
+        for pp_class in self.pp_classes:
+            namespace, obj_name = pp_class.split(":")
+            p_mod = importlib.import_module(namespace, obj_name)
+            process_class = getattr(p_mod, obj_name)
+            process_obj = process_class(filename, mime_type, old_filename)
+            process_obj.processed()
 
     async def convert(self, path):
         p = Path(path)

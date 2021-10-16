@@ -15,8 +15,7 @@ Usage:
 Options:
     --consumers=CONSUMERS           Number of consumers that will convert videos asynchronously [default: 2]
     --log-level=LEVEL               Set logger level, one of DEBUG, INFO, WARNING, ERROR, CRITICAL [default: INFO]
-    --container=FORMAT              Output container format, either webm or mp4 [default: mp4]
-    --post-processer=CLASS          The python class that handles post processing [default: dipthid.postprocessing:PostProcess]
+    --post-processor=CLASS          The python class that handles post processing, use multiple seperated by commas [default: dipthid.postprocessing:PostProcessLog]
 ```
 
 ## Installation
@@ -42,7 +41,7 @@ docker run \
     -v test_videos:/app/watch \
     -v output:/app/output \
     --rm dipthid \
-    --post-processer=dipthid.postprocessing:PostProcessLog
+    --post-processor=dipthid.postprocessing:PostProcessLog
 ```
 
 B2 Post Processor
@@ -55,7 +54,7 @@ docker run \
     --env "B2_BUCKETNAME=REPLACEME" \
     --env "B2_KEY=REPLACEME" \
     --env "B2_SECRET=REPLACEME" \
-    --post-processer=dipthid.postprocessing.b2_upload:B2Upload
+    --post-processor=dipthid.postprocessing.b2_upload:B2Upload
 ```
 
 ### Install as pip package
@@ -80,5 +79,5 @@ Upload to Backblaze B2 bucket on completion
 export B2_BUCKETNAME="REPLACEME"
 export B2_KEY="REPLACEME"
 export B2_SECRET="REPLACEME"
-dipthid ./test_videos/sample-avi-file.avi --post-processer=dipthid.postprocessing.b2_upload:B2Upload
+dipthid ./test_videos/sample-avi-file.avi --post-processor=dipthid.postprocessing.b2_sync:B2Process
 ```

@@ -40,6 +40,6 @@ RUN pip install --no-cache-dir .
 
 ENTRYPOINT [ "dipthid", "watch", "/app/watch"]
 
-CMD ["--post-processer=dipthid.postprocessing:PostProcessLog"]
+CMD ["--post-processor=dipthid.postprocessing:PostProcessLog"]
 
 HEALTHCHECK CMD ps -ef | grep "[d]ipthid" || exit 1
