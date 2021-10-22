@@ -5,7 +5,7 @@ class ConvertCommand:
         video_out,
         fps="25",
         gop_size="100",
-        preset_p="veryfast",
+        preset_p="veryslow",
         v_size_1="768x432",
         v_size_2="1920x1080",
     ):
@@ -75,7 +75,7 @@ class ConvertCommand:
             "-use_timeline",
             "1",
             "-seg_duration",
-            "4",
+            "6",
             "-adaptation_sets",
             "id=0,streams=v id=1,streams=a",
             "-f",

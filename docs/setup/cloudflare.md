@@ -41,13 +41,22 @@ Forwarding URL (Status Code: 302 - Temporary Redirect, Url: https://<PRETTY_URL>
 Set the route to <PRETTY_URL>/*
 
 ```javascript
- async function handleRequest(request) {
+async function handleRequest(request) {
     let url = new URL(request.url)
     // make sure you set B2_BUCKET_NAME as an environment variable
     url.pathname = `/file/${B2_BUCKET_NAME}${url.pathname}`
 
     let modified = new Request(url.toString(), request)
     let response = await fetch(modified)
+
+    // Recreate the response so we can modify the headers
+    response = new Response(response.body, response)
+
+    // Set CORS headers
+    response.headers.set("Access-Control-Allow-Origin", "*")
+
+    // Append to/Add Vary header so browser will cache response correctly
+    response.headers.append("Vary", "Origin")
 
     return response
 }

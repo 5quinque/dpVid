@@ -23,6 +23,7 @@ class Dip:
             process_obj.processed()
 
     async def convert(self, path):
+        logger.debug(f"Processing <{path}>")
         p = Path(path)
 
         self.vid = Video(path)
